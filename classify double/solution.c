@@ -15,16 +15,44 @@ uint64_t convertToUint64 (double number) {
 }
 
 bool getBit (const uint64_t number, const uint8_t index) {
-    /// Your code here...
+    uint64_t mask = 1 << index;
+    uint64_t temp = mask & number;
+    temp >>= index;
+    return temp;
 }
-
 
 /**
  * Checkers here:
  */
 
+bool checkForExpOnes(uint64_t number) {
+    for (int i = 62; i >= 52; i--){
+        if (getBit(number, i) != 1) return false;
+    }
+    return true;
+}
+
+bool checkForExpZeroes(uint64_t number) {
+    for (int i = 62; i >= 52; i--){
+        if (getBit(number, i) != 0) return false;
+    }
+    return true;
+}
+
+bool checkForNormal(uint64_t number) {
+    return !checkForExpOnes(number) && !checkForExpZeroes(number);
+}
+
+bool checkForDenormal(uint64_t number) {
+    return checkForExpZeroes && getBit(number, 0);
+}
+
+bool checkForSign(uint64_t number) {
+    return getBit(number, 63);
+}
+
 bool checkForPlusZero (uint64_t number) {
-    /// Your code here.
+    return number == 0x0000000000000000;
 }
 
 bool checkForMinusZero (uint64_t number) {
@@ -32,35 +60,35 @@ bool checkForMinusZero (uint64_t number) {
 }
 
 bool checkForPlusInf (uint64_t number) {
-    /// Your code here.
+    return number == 0x7ff0000000000000;
 }
 
 bool checkForMinusInf (uint64_t number) {
-    /// Your code here.
+    return number == 0xfff0000000000000;
 }
 
 bool checkForPlusNormal (uint64_t number) {
-    /// Your code here.
+    return !checkForSign(number) && checkForNormal(number);
 }
 
 bool checkForMinusNormal (uint64_t number) {
-    /// Your code here.
+    return checkForSign(number) && checkForNormal(number);
 }
 
 bool checkForPlusDenormal (uint64_t number) {
-    /// Your code here.
+    return !checkForSign(number) && checkForDenormal(number);
 }
 
 bool checkForMinusDenormal (uint64_t number) {
-    /// Your code here.
+    return checkForSign(number) && checkForDenormal(number);
 }
 
 bool checkForSignalingNan (uint64_t number) {
-    /// Your code here.
+    return checkForExpOnes(number) && !getBit(number, 51) && getBit(number, 0);
 }
 
 bool checkForQuietNan (uint64_t number) {
-    /// Your code here.
+    return checkForExpOnes(number) && getBit(number, 51);
 }
 
 
